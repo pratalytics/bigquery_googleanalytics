@@ -170,4 +170,25 @@ SELECT trafficSource.source AS traffic_source,
 ```
 
 ### ORDER BY operator
-Once you’ve learned how to filter data, it’s time to learn how to sort data. The `ORDER BY` clause allows you to reorder your results based on the data in one or more columns. If you’d like your results in the opposite order (referred to as descending order), you need to add the `DESC` operator
+Once you’ve learned how to filter data, it’s time to learn how to sort data. The `ORDER BY` clause allows you to reorder your results based on the data in one or more columns. If you’d like your results in the opposite order (referred to as descending order), you need to add the `DESC` operator.
+```sql
+-- ORDER BY operator
+SELECT trafficSource.source AS traffic_source,
+       trafficSource.medium	AS medium,
+       device.deviceCategory AS device_category,
+       totals.pageviews AS pageviews
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ ORDER BY pageviews DESC
+```
+
+You can also order by mutiple columns. This is particularly useful if your data falls into categories and you’d like to organize rows, but keep all of the results within a given category together. Couple of things to keep in mind - First, columns in the ORDER BY clause must be separated by commas. Second, the DESC operator is only applied to the column that precedes it. Finally, the results are sorted by the first column mentioned, then by second column afterward afterward.
+
+```sql
+-- ORDER BY MULTIPLE columns
+SELECT trafficSource.source AS traffic_source,
+       trafficSource.medium	AS medium,
+       device.deviceCategory AS device_category,
+       totals.pageviews AS pageviews
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ ORDER BY device_category, pageviews DESC
+```
