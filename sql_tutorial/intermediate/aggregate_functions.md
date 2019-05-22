@@ -77,3 +77,148 @@ SELECT channelGrouping,
  GROUP BY channelGrouping, device.deviceCategory
  ORDER BY channelGrouping, pageviews DESC
 ```
+
+### HAVING Clause
+If you want to filter on an aggregate field, `WHERE` clause doesn't work and you have to use a `HAVING` clause.
+
+```sql
+-- HAVING clause
+SELECT channelGrouping,
+       device.deviceCategory AS device_category,
+       SUM(totals.pageviews) AS pageviews
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ GROUP BY channelGrouping, device.deviceCategory
+HAVING SUM(totals.pageviews) > 50 
+ ORDER BY channelGrouping, pageviews DESC  
+```
+
+#### Query clause order
+The order in which you write the clauses is important. Here’s the order for everything you’ve learned so far:
+1. `SELECT`
+2. `FROM`
+3. `WHERE`
+4. `GROUP BY`
+5. `HAVING`
+6. `ORDER BY`
+
+## DISTINCT Clause
+You’ll occasionally want to look at only the unique values in a particular column. You can do this using `SELECT DISTINCT` syntax. If you include two (or more) columns in a `SELECT DISTINCT` clause, your results will contain all of the unique pairs of those two columns.
+
+```sql
+-- DISTINCT clause
+SELECT DISTINCT channelGrouping, device.deviceCategory  
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ ORDER BY channelGrouping, device.deviceCategory 
+```
+
+### Using DISTINCT in aggregations
+You can use `DISTINCT` when performing an aggregation. You’ll probably use it most commonly with the `COUNT` function.
+
+```sql
+-- DISTINCT with COUNT
+SELECT COUNT(fullVisitorId) AS total_users,
+       COUNT(DISTINCT fullVisitorId) AS unique_users
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+```
+### CASE statement
+The `CASE` statement is SQL’s way of handling if/then logic. The `CASE` statement is followed by at least one pair of `WHEN` and `THEN` statements. Every `CASE` statement must end with the `END` statement. The `ELSE` statement is optional, and provides a way to capture values not specified in the `WHEN/THEN` statements.
+
+```sql
+-- CASE statement
+SELECT DISTINCT device.deviceCategory, 
+       CASE device.deviceCategory
+       WHEN 'desktop' THEN 'computer'
+       WHEN 'mobile' THEN 'phone'
+       ELSE 'others'
+       END AS alt_device_names
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+```
+
+### Adding multiple conditions to a CASE statement
+You can also string together multiple conditional statements with `AND` and `OR` the same way you might in a `WHERE` clause:
+
+```sql
+-- CASE statement with multiple conditions
+SELECT trafficSource.source,
+       SUM(totals.pageviews) AS pageviews,
+       COUNT(fullVisitorId) AS users,
+       CASE 
+       WHEN SUM(totals.pageviews) > 100 
+       AND COUNT(fullVisitorId) > 100 THEN 'high_engagement'
+       WHEN SUM(totals.pageviews) > 50
+       AND COUNT(fullVisitorId) > 50 THEN 'medium_engagement'
+       ELSE 'low_engagement'
+       END AS engagement_category
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ GROUP BY trafficSource.source
+ ORDER BY pageviews DESC 
+```
+
+### Using CASE with aggregate functions
+`CASE`’s slightly more complicated and substantially more useful functionality comes from pairing it with aggregate functions. Using the `WHERE` clause only allows you to count one condition. The below query is an excellent place to use numbers instead of columns in the `GROUP BY` clause because repeating the `CASE` statement in the `GROUP BY` clause would make the query obnoxiously long. Alternatively, you can use the column’s alias in the `GROUP BY` clause
+
+```sql
+-- CASE statement with aggregate functions
+SELECT CASE 
+       WHEN channelGrouping = 'Organic Search'
+       AND device.deviceCategory = 'desktop' THEN 'organic_desktop'
+       WHEN channelGrouping = 'Organic Search'
+       AND device.deviceCategory = 'mobile' THEN 'organic_mobile'
+       WHEN channelGrouping = 'Direct'
+       AND device.deviceCategory = 'desktop' THEN 'direct_desktop'
+       WHEN channelGrouping = 'Direct'
+       AND device.deviceCategory = 'mobile' THEN 'direct_mobile' 
+       ELSE 'others'
+       END AS segments,
+       COUNT(fullVisitorId) AS users,
+       SUM(totals.pageviews) AS pageviews
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+ GROUP BY 1
+ ORDER BY pageviews DESC
+```
+
+### Using CASE inside of aggregate functions
+In the previous examples, data was displayed vertically, but in some instances, you might want to show data horizontally. This is known as _pivoting_
+
+```sql
+-- CASE statement inside of aggregate function
+SELECT COUNT(CASE 
+             WHEN channelGrouping = 'Organic Search'
+             AND device.deviceCategory = 'desktop' THEN 1
+             ELSE NULL
+             END) AS organic_desktop,
+       COUNT(CASE
+             WHEN channelGrouping = 'Organic Search'
+             AND device.deviceCategory = 'mobile' THEN 1
+             ELSE NULL
+             END) AS organic_mobile,
+       COUNT(CASE
+             WHEN channelGrouping = 'Direct'
+             AND device.deviceCategory = 'desktop' THEN 1
+             ELSE NULL
+             END) AS direct_desktop,
+       COUNT(CASE
+             WHEN channelGrouping = 'Direct'
+             AND device.deviceCategory = 'mobile' THEN 1
+             ELSE NULL
+             END) AS direct_mobile,
+       COUNT(CASE
+             WHEN (channelGrouping = 'Organic Search' AND device.deviceCategory = 'desktop')
+             OR   (channelGrouping = 'Organic Search' AND device.deviceCategory = 'mobile')
+             OR   (channelGrouping = 'Direct'AND device.deviceCategory = 'desktop')
+             OR   (channelGrouping = 'Direct'AND device.deviceCategory = 'mobile') THEN NULL
+             ELSE 1
+             END) AS others
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+```
+
+_Note: The above query is substantially bigger and complicated the queries we have written till now. I will add a In plain english section where I will try to expalin the query in a simple language._
+
+###### Plain English
+In excel, we will compute as below using a if else formula for each of the caclulated columns.
+
+channelgrouping|devicecategory|organic_desktop|organic_mobile|direct_desktop|direct_mobile|others
+---------------|--------------|---------------|--------------|--------------|-------------|-------
+Organic Search |desktop       |1              | NULL         |NULL          |NULL         |NULL
+Organic Search |mobile        |NULL           |1             |NULL          |NULL         |NULL
+Direct         |desktop       |NULL           |NULL          |1             |NULL         |NULL
