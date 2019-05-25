@@ -127,14 +127,77 @@ SELECT companies.name AS companies_name,
 Write a query that lists investors based on the number of companies in which they are invested. Include a row for companies with no investor, and order from most companies to least.
 
 ```sql
-
+SELECT CASE 
+       WHEN investments.investor_name IS NULL THEN 'No Investor'
+       ELSE investments.investor_name END AS investor_name,
+       COUNT(DISTINCT companies.permalink) AS unique_companies
+  FROM `sandbox-bq.join_training.crunchbase_companies` AS companies
+       LEFT JOIN `sandbox-bq.join_training.crunchbase_investments` AS investments
+       ON companies.permalink = investments.company_permalink
+ GROUP BY investor_name
+ ORDER BY unique_companies DESC
 ```
 
+## Full Outer Join
+`FULL JOIN` returns unmatched rows from both tables. It is commonly used in conjunction with aggregations to understand the amount of overlap between two tables.
+
+```sql
+SELECT COUNT(CASE
+             WHEN companies.permalink IS NOT NULL AND acquisitions.company_permalink IS NULL THEN companies.permalink
+             ELSE NULL END) AS companies_only,
+       COUNT(CASE
+             WHEN acquisitions.company_permalink IS NOT NULL AND companies.permalink IS NULL THEN acquisitions.company_permalink
+             ELSE NULL END) AS acquisitions_only,
+       COUNT(CASE
+             WHEN companies.permalink IS NOT NULL AND acquisitions.company_permalink IS NOT NULL THEN companies.permalink
+             ELSE NULL END) AS both_tables
+  FROM `sandbox-bq.join_training.crunchbase_companies` AS companies
+       FULL JOIN `sandbox-bq.join_training.crunchbase_acqusitions` AS acquisitions
+       ON companies.permalink = acquisitions.company_permalink 
+```
+
+## SQL Unions
+SQL joins allow you to combine two datasets side-by-side, but `UNION` allows you to stack one dataset on top of the other. Put differently, `UNION` allows you to write two separate `SELECT` statements, and to have the results of one statement display in the same table as the results from the other statement.
+
+Note that `UNION` only appends distinct values. More specifically, when you use `UNION`, the dataset is appended, and any rows in the appended table that are exactly identical to rows in the first table are dropped. If you’d like to append all the values from the second table, use `UNION ALL`. You’ll likely use `UNION ALL` far more often than `UNION`. 
+
+SQL has strict rules for appending data:
+
+1. Both tables must have the same number of columns
+2. The columns must have the same data types in the same order as the first table
+
+## Using comparison operators with joins
+
+```sql
+-- Comparison operators with Join
+SELECT companies.permalink AS companies_permalink,
+       companies.name AS companies_name,
+       companies.status AS companies_status,
+       COUNT(investments.investor_permalink) AS investors,
+       COUNT(DISTINCT investments.investor_permalink) AS unique_investors
+  FROM `sandbox-bq.join_training.crunchbase_companies` AS companies
+       LEFT JOIN `sandbox-bq.join_training.crunchbase_investments` AS investments
+       ON companies.permalink = investments.company_permalink
+          AND investments.funded_year > companies.founded_year + 5
+ GROUP BY 1,2,3
+ ORDER BY investors DESC
+```
+This technique is especially useful for creating date ranges as shown above. It’s important to note that this produces a different result than the following query because it only joins rows that fit the investments.funded_year > companies.founded_year + 5 condition rather than joining all rows and then filtering:
 
 
+## Self Joins
 
-
-
+```sql
+--SELF Joins
+SELECT jp_inv.company_name AS company_name
+  FROM `sandbox-bq.join_training.crunchbase_investments` AS jp_inv
+       INNER JOIN `sandbox-bq.join_training.crunchbase_investments` AS gb_inv
+       ON jp_inv.company_name = gb_inv.company_name
+          AND gb_inv.investor_country_code = 'GBR'
+          AND gb_inv.funded_at > jp_inv.funded_at
+ WHERE jp_inv.investor_country_code = 'JPN'
+ ORDER BY 1
+```
 
 
 
