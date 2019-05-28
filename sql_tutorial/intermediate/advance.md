@@ -51,4 +51,34 @@ SELECT permalink,
 ```
 
 
-Write a query that counts the number of companies acquired within 3 years, 5 years, and 10 years of being founded (in 3 separate columns). Include a column for total companies acquired as well. Group by category and limit to only rows with a founding date.
+Write a query that counts the number of companies acquired within 3 years, 5 years, and 10 years of being founded (in 3 separate columns and it is non cummulative). Include a column for total companies acquired as well. Group by category and limit to only rows with a founding date.
+
+```sql
+SELECT companies.category_code AS category,
+       COUNT(CASE 
+             WHEN DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) IS NOT NULL THEN 1
+             ELSE NULL END) AS acquired_companies_count,
+       COUNT(CASE
+             WHEN DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) <= 3 THEN 1
+             ELSE NULL END) AS acquired_companies_3years,
+       COUNT(CASE
+             WHEN DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) <= 5
+             AND DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) >= 4 THEN 1
+             ELSE NULL END) AS acquired_companies_5years,
+       COUNT(CASE
+             WHEN DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) <= 10
+             AND DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) >= 6 THEN 1
+             ELSE NULL END) AS acquired_companies_10years,
+       COUNT(CASE
+             WHEN DATE_DIFF(EXTRACT(DATE FROM acquisitions.acquired_at_cleaned), PARSE_DATE('%F', companies.founded_at_clean), YEAR) >= 11 THEN 1
+             ELSE NULL END) AS acquired_companies_10plusyears
+       
+  FROM `sandbox-bq.join_training.companies_clean_date` AS companies
+       LEFT JOIN `sandbox-bq.join_training.acquisition_clean_date` AS acquisitions
+       ON companies.permalink = acquisitions.company_permalink
+       AND companies.founded_at_clean IS NOT NULL
+    
+ GROUP BY category
+ ORDER BY acquired_companies_count DESC 
+
+```
