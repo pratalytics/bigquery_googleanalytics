@@ -82,3 +82,49 @@ SELECT companies.category_code AS category,
  ORDER BY acquired_companies_count DESC 
 
 ```
+
+## Subqueries
+
+```sql
+SELECT *
+  FROM (SELECT *
+          FROM `sandbox-bq.join_training.sf_crime_2014`
+          WHERE day_of_week = 'Friday') AS sub
+ WHERE sub.resolution = 'NONE'
+```
+Let’s break down what happens when you run the above query:
+
+First, the BQ engine runs the “inner query”—the part between the parentheses. If you were to run this on its own, it would produce a result set like any other query. It might sound like a no-brainer, but it’s important: your inner query must actually run on its own, as the database will treat it as an independent query. Once the inner query runs, the outer query will run _using the results from the inner query as its underlying table_
+
+### Using subqueries to aggregate in multiple stages
+
+```sql
+SELECT FORMAT_DATE('%m',PARSE_DATE('%m/%d/%Y',SUBSTR(sub_1.date,0,10))) AS month,
+       sub_1.day_of_week,
+       AVG(sub_1.incidents) AS avg_no_incidents
+  FROM (SELECT day_of_week,
+               date,
+               COUNT(incidnt_num) AS incidents
+         FROM `sandbox-bq.join_training.sf_crime_2014`
+        GROUP BY day_of_week, date) AS sub_1
+  GROUP BY 1,2
+  ORDER BY 1, 3
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
