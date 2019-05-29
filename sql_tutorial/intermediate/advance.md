@@ -366,6 +366,52 @@ WINDOW ntile_window AS (PARTITION BY start_station_name ORDER BY duration_sec)
 ```
 
 
+### Pivoting In Big Query
+
+```sql
+SELECT teams.conference,
+       players.year,
+       COUNT(*) AS player_count
+  FROM `sandbox-bq.join_training.football_players` AS players
+       INNER JOIN `sandbox-bq.join_training.football_teams` AS teams
+       ON players.school_name = teams.school_name
+ GROUP BY teams.conference, players.year
+ ORDER BY 1, 2
+```
+
+```sql
+WITH  sub AS
+            (
+             SELECT teams.conference,
+                    players.year,
+                    COUNT(*) AS player_count
+               FROM `sandbox-bq.join_training.football_players` AS players
+                    INNER JOIN `sandbox-bq.join_training.football_teams` AS teams
+                    ON players.school_name = teams.school_name
+              GROUP BY teams.conference, players.year
+              ORDER BY 1, 2
+              )
+
+SELECT conference,
+       SUM(player_count) AS total_players,
+       SUM(CASE
+           WHEN year = 'FR' THEN player_count
+           ELSE NULL END) AS fr,
+       SUM(CASE
+           WHEN year = 'SO' THEN player_count
+           ELSE NULL END) AS so,
+       SUM(CASE
+           WHEN year = 'JR' THEN player_count
+           ELSE NULL END) AS jr,
+       SUM(CASE
+           WHEN year = 'SR' THEN player_count
+           ELSE NULL END) AS sr
+  FROM sub
+ GROUP BY 1
+ ORDER BY 2 DESC
+```
+
+
 
 
 
