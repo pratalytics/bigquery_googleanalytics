@@ -4,6 +4,13 @@ A lot of digital analyst have worked on Google analytics or Adobe Analytics but 
 We go from knowing nothing about SQL to writing advanced scripts for finding user cohorts and purchase behavior.
 
 
+## Exploring the GA 360 sample dataset
+* How many tables are there in the dataset?
+* What information is encapsulated in one row of a GA 360 table?
+* What are the differences compared to an excel table? 
+* What is a project, a datset and a table?
+
+
 ## Selecting columns
 
 ```sql
@@ -16,17 +23,30 @@ SELECT trafficSource.source AS source,
 ```
 
 ### Conceptual  questions 
-1. What are the two required clauses in any SQL query and what is the order they should be in?
-2. How do you separate multiple columns?
-3. How do you select every column in the table?
-4. How do you you format column names?
-5. How do you limit your results?
+* What are the two required clauses in any SQL query and what is the order they should be in?
+* How do you format the table name in the `FROM` clause?
+* How do you separate multiple columns?
+* How do you select every column in the table?
+* How do you you format column names?
+* How do you limit your results?
 
 ### Exercises
 1. Select columns which has client ID, the visit number, session ID, session start time and date
 2. Select any two columns from the following records - totals, trafficSource, device, geoNetwork. Can you select columns from hits.eCommerceAction? What error do you get?
 
-## Filtering the results
+## Quering multiple tables, Filtering and Sorting the results
+
+### Querying Multiple tables
+
+#### Conceptutal Questions
+* What are wildcard tables and when to use it?
+* Are the tables in GA 360 big query dataset eligible for wildcard table operations? Why?
+* What is the table wildcard symbol and how to use it?
+* In which clause do you use the `_TABLE_SUFFIX` operator?
+* How do you query all the tables?
+* How do you query a range of tables?
+* How do you query selected tables?
+* True or False: Shorter or empty prefixes work better than the longer prefixes
 
 ### Conceptual Questions
 1. Which clause to use to filter the results?
@@ -45,9 +65,37 @@ SELECT trafficSource.source AS source,
 14. Which logical operator allows you to select only rows that must satisfy all the conditions (Minimum 2)? 
 15. Which logical operator allows you to select only rows that satisfy either/any of the conditions (Minimum 2)?
 16. How can we combine multiple `AND` and `OR` operators?
+17. Which operator works similar to _does not contain_?
+18. Which clause allows you to reorder your results based on the data in one or more columns?
+19. How can you sort the results in descending order?
+20. How can you sort by multiple columns?
 
-### Exercises
-1. 
+
+# Exercises
+* Write a query to get a list of countries that contains "United" in the month of Jan 2017
+* Write a query to get the names of all the cities except for the following - Mumbai, Hong Kong, San Francisco and London for the dates of 15th Sept 2016, 29th Oct 2016 and 7th dec 2016.
+* Write a query where the referral path is not null between the dates may 10th 2017 to may 24th 2017
+* Write a query to get session ids where the time on site is more than 50 seconds but less than or equal to 500 seconds in the year 2016. Sort it in descending order
+* Write a query where the channel organic and total hits in a session is greater than 5 or the device is mobile and it is a returning user for the date 19th Feb 2017
+* Write a query where total.visits is greater than 1 across all the tables. What is the output and what is the reason for it?
+
+
+## Aggregate and Group BY
+
+## Conceptutal questions
+* Which aggregate function is used to count the number of rows in a particular column?
+* How do you count all the rows in a given dataset?
+* How do `NULL` values affect the count of individual columns?
+* Can `COUNT` be used on non-numnerical columns?
+* Which aggreagate function totals the values in a given column?
+* How do `SUM` treats `NULL` values?
+* Which aggregate functions return the highest and the loweset values in a particular column?
+* Which aggregate function calculates the average of values in a given column? What is it limitation?
+* 
+
+
+
+
 
 
 
