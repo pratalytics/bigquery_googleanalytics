@@ -22,12 +22,12 @@ SELECT trafficSource.source AS source,
  LIMIT 5
 ```
 
-### Conceptual  questions 
+### Review  questions 
 * What are the two required clauses in any SQL query and what is the order they should be in?
 * How do you format the table name in the `FROM` clause?
 * How do you separate multiple columns?
 * How do you select every column in the table?
-* How do you you format column names?
+* How do you rename column names?
 * How do you limit your results?
 
 ### Exercises
@@ -38,7 +38,7 @@ SELECT trafficSource.source AS source,
 
 ### Querying Multiple tables
 
-#### Conceptutal Questions
+#### Review Questions
 * What are wildcard tables and when to use it?
 * Are the tables in GA 360 big query dataset eligible for wildcard table operations? Why?
 * What is the table wildcard symbol and how to use it?
@@ -48,7 +48,7 @@ SELECT trafficSource.source AS source,
 * How do you query selected tables?
 * True or False: Shorter or empty prefixes work better than the longer prefixes
 
-### Conceptual Questions
+### Review Questions
 1. Which clause to use to filter the results?
 2. What is the order of the SQL clauses?
 3. What are the different types of comparision operators? How do they work on non-numerical data?
@@ -68,7 +68,8 @@ SELECT trafficSource.source AS source,
 17. Which operator works similar to _does not contain_?
 18. Which clause allows you to reorder your results based on the data in one or more columns?
 19. How can you sort the results in descending order?
-20. How can you sort by multiple columns?
+* How can you sort by multiple columns? 
+* Can you substitue the column name by numbers in the `ORDER BY` clause? What do the numbers correspond to?
 
 
 # Exercises
@@ -82,7 +83,7 @@ SELECT trafficSource.source AS source,
 
 ## Aggregate and Group BY
 
-## Conceptutal questions
+## Review questions
 * Which aggregate function is used to count the number of rows in a particular column?
 * How do you count all the rows in a given dataset?
 * How do `NULL` values affect the count of individual columns?
@@ -91,7 +92,79 @@ SELECT trafficSource.source AS source,
 * How do `SUM` treats `NULL` values?
 * Which aggregate functions return the highest and the loweset values in a particular column?
 * Which aggregate function calculates the average of values in a given column? What is it limitation?
-* 
+* Which clause allows you to separate data into groups which can be aggregated independently of one another?
+* How do you use `GROUP BY` with multiple coulmns?
+* As with the `ORDER BY` clause can you substitue the column names with numbers in the `GROUP BY` clause?
+* If you want to control how the aggregations are grouped together, you need to use what?
+* Can you use `WHERE` clause to filter on aggregated columns? How do you filter on aggregated columns?
+* Which clause to use to look at only unqiue values in a column?
+* How do you use `DISTINCT` with `COUNT`?
+
+
+## Exercises
+* Write a query to find the total users, new users, sessions, pageviews, revenue and transactions for the period of Jan'17 to March
+* Group the above query by channel groupping, device category and source
+* Modify the grouped query to filter for desktop and channel grouping containing either organic search or direct. Filter it further to include only those rows that have transactions and new users is greater than 1000. Order it by transactions 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Solutions
+
+```sql
+SELECT device.deviceCategory AS device_category,
+       channelGrouping,
+       trafficSource.source AS source,
+       COUNT(fullVisitorId) AS users,
+       SUM(totals.newVisits) AS new_users,
+       SUM(totals.visits) AS sessions,
+       SUM(totals.pageviews) AS pageviews,
+       SUM(totals.totalTransactionRevenue)/1000000 AS revenue,
+       SUM(totals.transactions) AS transactions
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`
+ WHERE device.deviceCategory = 'desktop'
+   AND (channelGrouping IN ('Organic Search', 'Direct'))
+   AND _TABLE_SUFFIX BETWEEN '0101' AND '0331'
+ GROUP BY 1,2,3
+HAVING transactions IS NOT NULL
+   AND new_users > 1000
+ ORDER BY transactions DESC
+```
 
 
 
