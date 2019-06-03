@@ -3,6 +3,44 @@ A lot of digital analyst have worked on Google analytics or Adobe Analytics but 
 
 We go from knowing nothing about SQL to writing advanced scripts for finding user cohorts and purchase behavior.
 
+## All exercises
+#### Selecting columns
+
+You should know- Basic SQL clauses and reading the GA 360 schema
+
+* Select columns which has visitor ID, the visit number, session ID, session start time and date
+* Select any two columns from the following records - totals, trafficSource, device, geoNetwork. Can you select columns from hits.eCommerceAction? What error do you get?
+
+#### Filtering and Ordering
+
+You should know- Conditional and logical operators, ordering columns and using table suffixes
+
+* Write a query to get the name of countries that contains "United" in the month of Jan 2017
+* Write a query to get the names of all the cities except for the following - Mumbai, Hong Kong, San Francisco and London for the dates of 15th Sept 2016, 29th Oct 2016 and 7th dec 2016.
+* Write a query where the referral path is not null between the dates may 10th 2017 to may 24th 2017. 
+* Write a query to get session ids where the time on site is more than 50 seconds but less than or equal to 500 seconds in the year 2016. Sort it in descending order. 
+* Write a query where the channel is Social and total hits in a session is greater than 5 or the device is mobile and it is a returning user for the date 19th Feb 2017
+* Write a query where total.visits is greater than 1 across all the tables. What is the output and what is the reason for it?
+
+#### Aggregating and Grouping
+
+You should know - Aggregation functions like `SUM`, `COUNT`, `DISTINCT` etc and using `GROUP BY`
+
+* 1. Write a query to find the total users, new users, sessions, pageviews, revenue and transactions for the period of Jan'17 to March'17. Are the revenue numbers correct or do we need to treat it further?
+  2. Group the above query by channel groupping, device category and source
+  3. Modify the grouped query to filter for desktop and channel grouping containing either organic search or direct. Filter it further to include only those rows that have transactions and new users is greater than 1000. Order it by transactions in descending order
+* Write a query to find unique values in the medium column
+
+#### Conditional Functions
+
+You should know - `CASE`, `IF`, `IFNULL` etc. How to use these functions with aggregate functions.
+
+* Write a query to replace `NULL` values in the referral path column
+* Write a query to find total sessions across device category for the year 2017. Include a column that replaces the values in the device category column with Computer, Phone and Tab for desktop, mobile and tablet respectively
+* Write a query to get total users, revenue and transactions by channel for the year of 2017. Add an additional column which categorises the rows based on the following conditions
+  1. If the users are greater than 58000 and the revenue is greater than 128600 and the transations is greater than 800 then categorise it as 'High Engagemnt - High Revenue'
+  2. After the above condition is met then if only user are greater than 58000 then categorise is as 'High Engagement'
+  3. Similarly if only the revenue is greater than 120000 then categorise it as 'High Revenue'
 
 ## Exploring the GA 360 sample dataset
 * How many tables are there in the dataset?
@@ -30,9 +68,7 @@ SELECT trafficSource.source AS source,
 * How do you rename column names?
 * How do you limit your results?
 
-### Exercises
-1. Select columns which has client ID, the visit number, session ID, session start time and date
-2. Select any two columns from the following records - totals, trafficSource, device, geoNetwork. Can you select columns from hits.eCommerceAction? What error do you get?
+
 
 ## Quering multiple tables, Filtering and Sorting the results
 
@@ -72,14 +108,6 @@ SELECT trafficSource.source AS source,
 * Can you substitue the column name by numbers in the `ORDER BY` clause? What do the numbers correspond to?
 
 
-# Exercises
-* Write a query to get a list of countries that contains "United" in the month of Jan 2017
-* Write a query to get the names of all the cities except for the following - Mumbai, Hong Kong, San Francisco and London for the dates of 15th Sept 2016, 29th Oct 2016 and 7th dec 2016.
-* Write a query where the referral path is not null between the dates may 10th 2017 to may 24th 2017
-* Write a query to get session ids where the time on site is more than 50 seconds but less than or equal to 500 seconds in the year 2016. Sort it in descending order
-* Write a query where the channel organic and total hits in a session is greater than 5 or the device is mobile and it is a returning user for the date 19th Feb 2017
-* Write a query where total.visits is greater than 1 across all the tables. What is the output and what is the reason for it?
-
 
 ## Aggregate and Group BY
 
@@ -99,49 +127,6 @@ SELECT trafficSource.source AS source,
 * Can you use `WHERE` clause to filter on aggregated columns? How do you filter on aggregated columns?
 * Which clause to use to look at only unqiue values in a column?
 * How do you use `DISTINCT` with `COUNT`?
-
-
-## Exercises
-* Write a query to find the total users, new users, sessions, pageviews, revenue and transactions for the period of Jan'17 to March
-* Group the above query by channel groupping, device category and source
-* Modify the grouped query to filter for desktop and channel grouping containing either organic search or direct. Filter it further to include only those rows that have transactions and new users is greater than 1000. Order it by transactions 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Solutions
