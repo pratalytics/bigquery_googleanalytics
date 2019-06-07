@@ -108,3 +108,26 @@ HAVING transactions IS NOT NULL
    AND new_users > 1000
  ORDER BY transactions DESC
 ```
+
+Write a query to get page path, title and hostname along with pageviews and entrances for the period of April 2017
+```sql
+SELECT hits.page.pagePath AS page_path,
+       COUNT(hits.page.pagePath) AS pageviews,
+       SUM(IF(hits.isEntrance,1,0)) AS entrances
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_201610*`,
+       UNNEST(hits) AS hits
+ GROUP BY 1
+ ORDER BY 2 DESC
+```
+Write a query to product, revenue and quantity for the period Jan-Mar 2017
+```sql
+SELECT eec.v2ProductName,
+       SUM(eec.productRevenue)/1000000 AS product_revenue,
+       SUM(eec.productQuantity) AS product_quantity
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_2017*`,
+       UNNEST(hits) AS hits,
+       UNNEST(hits.product) AS eec
+ WHERE _TABLE_SUFFIX BETWEEN '0101' AND '0330'
+ GROUP BY 1
+ ORDER BY 2 DESC
+```
