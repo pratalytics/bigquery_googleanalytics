@@ -61,7 +61,9 @@ You should know - using unnest to flatten repeated fields, concept of joins in S
 
 #### Sub query
 
+You should know - Using sub query in the `FROM` clause, in the `WHERE` clause and in the `SELECT` clause. Use of `WITH` clause
 
+* Write a query to get sessions, pageviews, transactions, users, users/session, pages/session, bounce rate and ecommerce rate grouped by channel grouping for the period of May'17 to Jun'17
 
 
 
