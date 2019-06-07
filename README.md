@@ -43,6 +43,27 @@ You should know - `CASE`, `IF`, `IFNULL` etc. How to use these functions with ag
   3. Similarly if only the revenue is greater than 120000 then categorise it as 'High Revenue'
 
 
+#### Working with Date and Time
+
+You should know- differences between data types like `DATETIME`, `DATE`, `TIME` AND `TIMESTAMP`. Functions to format and parse dates, findind time and date intervals
+
+* Write a query to get total pageviews and sessions for all the tables. Group them by year, quarter and month based on the values of the visitStartTime column. (Don't include the visitStartTime column in the output). Ensure the time zone is America Los Angeles.
+* Write a query to get total users and transactions for the month of June 2017. Group them by week, day of the week, and hour based on the values of the date column. (Don't include the date column in the output). Ensure the time zone is America Los Angeles.
+* Write a query to get total sessions for 23rd May 2017. Also get total sessions for the date 2 months prior to 23rd as well as get total sessions for the date which is 3 weeks after 23rd.
+
+#### Working with Repeated fields - UNNEST
+
+You should know - using unnest to flatten repeated fields, concept of joins in SQL
+
+* Write a query to get page path, title and hostname along with pageviews and entrances for the period of April 2017
+* Write a query to get event category and event action along with total and unique events for the period of Nov 2016
+* Write a query to product, revenue and quantity for the period Jan-Mar 2017
+
+#### Sub query
+
+
+
+
 
 
 
